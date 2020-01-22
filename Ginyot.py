@@ -59,6 +59,9 @@ def crearbaraja(palos=["oros","bastos","copas","espadas"]):
         
     ultima=baraja.pop(random.randint(0,len(baraja)-1))
     baraja.append(ultima)
+    
+    print("Vamos de: ",ultima[0])
+    
     return baraja, ultima[0]
 
 
@@ -99,16 +102,25 @@ def primerreparto(d, baraja):
     return (d, baraja)
             
 
-def tirarcarta(mano):
+def tirarcarta(mano, decision):
     """
     Description: Esta funcion escoge la carta a jugar dada una mano
     
     Argumentos: mano - Lista de tuplas (string, int) con la mano de un jugador (conjunto de cartas de las que
                         dispone)
+                decision - Booleana que indica si la jugada se escoge o se realiza aleatoria
+                
     Output: mano - Lista de tuplas (string, int) con la mano actualizada
             carta - Tupla (string, int) con la carta a jugar
     """
-    carta = mano.pop(random.randint(0,len(mano)-1))
+    if decision:
+        
+        print("******** Tu mano es: *********")
+        print(mano)
+        eleccion = input("Escoje que carta quieres jugar: ")
+        carta = mano.pop(int(eleccion))
+    else:
+        carta = mano.pop(random.randint(0,len(mano)-1))
     
     print ("Se juega la carta", carta)
 
@@ -134,7 +146,7 @@ def tirada(d):
         for jugador in d:
             if d[jugador][2]==i:
                 print("Tira el jugador: ",jugador, " en el turno ", d[jugador][2])
-                d[jugador][0], tirada[jugador] = tirarcarta(d[jugador][0])
+                d[jugador][0], tirada[jugador] = tirarcarta(d[jugador][0],jugador=="a")
                 
                 if primerpalo=="":
                     primerpalo=tirada[jugador][0]
@@ -240,19 +252,21 @@ def ronda(puntuaciones, d, triunfo, cantados, ncards):
     turnoanterior=d[ganador][2]
     turnosiguiente=1
     
+    jugadoresasignados=[]
+    
     while turnosiguiente<len(d)+1:
         
         for jugador in d:
             
-            if d[jugador][2]==turnoanterior:
-                d[jugador][2]==turnosiguiente
-                
+            if (not jugador in jugadoresasignados) and d[jugador][2]==turnoanterior:
+                d[jugador][2]=turnosiguiente
                 if turnoanterior==len(d):
                     turnoanterior=1
                 else:
                     turnoanterior+=1
                 
                 turnosiguiente+=1
+                jugadoresasignados.append(jugador)
                 break
     return (d, cantados)
 
@@ -341,8 +355,6 @@ def test():
     
     return d
 
-#d=test()
-    
-d= creardiccionario(["a","b","c","d"])
-    
-d = completa(puntuaciones,d)
+
+if __name__ == "__main__":
+    d=test()
